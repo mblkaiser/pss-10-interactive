@@ -1,0 +1,755 @@
+<html lang="zh-Hant"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>壓力知覺量表 PSS-10</title>
+  <style>
+    :root {
+      --ink: #193247;
+      --muted: #62798a;
+      --line: #dbe7ed;
+      --paper: #ffffff;
+      --wash: #f4fafb;
+      --teal: #157a79;
+      --teal-dark: #0e5f61;
+      --teal-soft: #ddf3f0;
+      --gold: #e8b76a;
+      --danger: #b54449;
+      --shadow: 0 24px 60px rgba(32, 70, 88, .12);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(232, 183, 106, .2), transparent 24rem),
+        radial-gradient(circle at 92% 18%, rgba(21, 122, 121, .14), transparent 26rem),
+        var(--wash);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      line-height: 1.65;
+    }
+
+    .shell { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 34px 0 56px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-bottom: 32px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .06em; }
+    .brand-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; color: white; background: var(--teal); box-shadow: 0 8px 18px rgba(21, 122, 121, .24); }
+    .privacy-note { color: var(--muted); font-size: 13px; }
+    .view-role { padding: 7px 11px; border: 1px solid var(--line); border-radius: 999px; color: var(--teal-dark); background: var(--teal-soft); font-size: 12px; font-weight: 800; }
+    .sync-status { padding: 7px 11px; border: 1px solid #bfe1d8; border-radius: 999px; color: var(--teal-dark); background: #effaf7; font-size: 12px; font-weight: 800; }
+    .sync-status.error { border-color: #efc2c4; color: var(--danger); background: #fff3f3; }
+
+    .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 28px; align-items: stretch; margin-bottom: 26px; }
+    .hero-copy, .hero-aside, .card { background: rgba(255,255,255,.88); border: 1px solid rgba(219,231,237,.9); border-radius: 24px; box-shadow: var(--shadow); }
+    .hero-copy { padding: 38px; }
+    .eyebrow { margin: 0 0 10px; color: var(--teal); font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 0; max-width: 650px; font-size: clamp(32px, 5vw, 58px); line-height: 1.08; letter-spacing: -.045em; }
+    .intro { max-width: 620px; margin: 18px 0 0; color: var(--muted); font-size: 16px; }
+    .hero-aside { display: flex; flex-direction: column; justify-content: space-between; padding: 28px; background: linear-gradient(150deg, #0e5f61, #1b8884); color: white; overflow: hidden; position: relative; }
+    .hero-aside::after { content: ""; position: absolute; width: 190px; height: 190px; right: -62px; bottom: -78px; border-radius: 50%; border: 28px solid rgba(255,255,255,.1); }
+    .aside-label { position: relative; z-index: 1; color: rgba(255,255,255,.72); font-size: 13px; letter-spacing: .1em; }
+    .aside-score { position: relative; z-index: 1; margin: 10px 0; font-size: 54px; font-weight: 800; letter-spacing: -.05em; }
+    .aside-copy { position: relative; z-index: 1; max-width: 230px; color: rgba(255,255,255,.82); font-size: 14px; }
+
+    .card { padding: 26px; }
+    .screen-kicker { margin: 0 0 8px; color: var(--teal); font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .screen-title { margin: 0; font-size: clamp(24px, 4vw, 34px); line-height: 1.2; letter-spacing: -.03em; }
+    .screen-copy { margin: 10px 0 24px; color: var(--muted); }
+    .nickname-card { max-width: 720px; }
+    .nickname-submit { margin-top: 6px; }
+    .lobby-card { display: none; }
+    .lobby-head { display: flex; justify-content: space-between; align-items: start; gap: 18px; margin-bottom: 24px; }
+    .lobby-count { min-width: 120px; padding: 14px 18px; border-radius: 18px; color: white; background: var(--teal); text-align: center; }
+    .lobby-count strong { display: block; font-size: 32px; line-height: 1; }
+    .lobby-count span { font-size: 12px; opacity: .82; }
+    .lobby-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .lobby-panel { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: #fbfdfe; }
+    .panel-title { margin: 0 0 12px; font-size: 14px; }
+    .participant-list { display: grid; gap: 8px; min-height: 76px; }
+    .participant-row { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; background: #f1f7f8; }
+    .participant-avatar { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: white; background: var(--teal); font-size: 12px; font-weight: 800; }
+    .participant-name { overflow: hidden; flex: 1; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+    .participant-state { color: var(--teal); font-size: 12px; font-weight: 800; }
+    .lobby-status { margin: 18px 0 0; padding: 14px 16px; border-radius: 12px; color: var(--teal-dark); background: var(--teal-soft); font-size: 14px; }
+    .lobby-status.countdown { color: #805c1b; background: #fff4dc; }
+    .speaker-controls { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+    .speaker-note { color: var(--muted); font-size: 13px; }
+    .speaker-chip { padding: 7px 11px; border-radius: 999px; color: var(--teal-dark); background: var(--teal-soft); font-size: 12px; font-weight: 800; }
+    .actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid var(--line); }
+    .timer-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .live-participants { color: var(--muted); font-size: 13px; }
+    .form-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: end; margin-bottom: 26px; }
+    label.field-label { display: block; margin-bottom: 7px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    input[type="text"] { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; color: var(--ink); background: #fbfdfe; font: inherit; outline: none; }
+    input[type="text"]:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(21,122,121,.12); }
+    .field-error { min-height: 22px; margin: 6px 0 0; color: var(--danger); font-size: 13px; }
+    .meta { color: var(--muted); font-size: 13px; text-align: right; white-space: nowrap; }
+
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 9px; color: var(--muted); font-size: 13px; }
+    .progress-track { height: 8px; overflow: hidden; border-radius: 999px; background: #e7f0f3; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--teal), #60b8a9); transition: width .25s ease; }
+
+    .question-stage { min-height: 300px; }
+    .question-number { color: var(--teal); font-size: 14px; font-weight: 800; letter-spacing: .1em; }
+    .question-text { margin: 10px 0 24px; max-width: 760px; font-size: clamp(21px, 3vw, 30px); line-height: 1.38; letter-spacing: -.02em; }
+    .options { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+    .option { position: relative; }
+    .option input { position: absolute; opacity: 0; pointer-events: none; }
+    .option label { display: flex; align-items: center; justify-content: center; min-height: 68px; padding: 10px 8px; border: 1px solid var(--line); border-radius: 14px; color: var(--ink); background: #fbfdfe; text-align: center; font-size: 14px; cursor: pointer; transition: border-color .2s, background .2s, transform .2s, box-shadow .2s; }
+    .option label:hover { border-color: #8fcac2; transform: translateY(-2px); }
+    .option input:checked + label { border-color: var(--teal); color: var(--teal-dark); background: var(--teal-soft); box-shadow: 0 0 0 3px rgba(21,122,121,.12); font-weight: 800; }
+    .option input:focus-visible + label { outline: 3px solid rgba(232,183,106,.75); outline-offset: 2px; }
+    .error { min-height: 24px; margin: 16px 0 0; color: var(--danger); font-size: 14px; }
+
+    button { border: 0; border-radius: 12px; padding: 12px 18px; color: var(--ink); background: #eaf2f4; font: inherit; font-weight: 800; cursor: pointer; transition: transform .2s, box-shadow .2s, background .2s; }
+    button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(32,70,88,.14); }
+    button:disabled { cursor: not-allowed; opacity: .45; }
+    .primary { color: white; background: var(--teal); }
+    .primary:hover:not(:disabled) { background: var(--teal-dark); }
+    .button-group { display: flex; gap: 10px; }
+
+    .result { display: none; }
+    .result.visible { display: block; animation: rise .45s ease both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .result-top { display: flex; justify-content: space-between; align-items: start; gap: 18px; margin-bottom: 24px; }
+    .result h2 { margin: 0; font-size: 30px; letter-spacing: -.03em; }
+    .score-badge { min-width: 112px; padding: 14px 18px; border-radius: 18px; color: white; background: var(--teal); text-align: center; }
+    .score-badge strong { display: block; font-size: 36px; line-height: 1; }
+    .score-badge span { font-size: 12px; opacity: .8; }
+    .level { display: inline-flex; margin: 8px 0 0; padding: 7px 11px; border-radius: 999px; color: var(--teal-dark); background: var(--teal-soft); font-size: 13px; font-weight: 800; }
+    .result-copy { margin: 0; color: var(--muted); }
+    .scale { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 26px 0; }
+    .scale-item { padding: 15px; border: 1px solid var(--line); border-radius: 15px; background: #fbfdfe; }
+    .scale-item strong { display: block; font-size: 14px; }
+    .scale-item span { color: var(--muted); font-size: 13px; }
+    .scale-item.active { border-color: var(--gold); background: #fff8ec; box-shadow: inset 0 0 0 1px var(--gold); }
+    .disclaimer { margin-top: 22px; padding: 14px 16px; border-radius: 13px; color: var(--muted); background: #f2f6f7; font-size: 13px; }
+    .copyright { margin: 28px 0 0; color: #8095a0; font-size: 11px; line-height: 1.6; }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 22px, 620px); padding-top: 18px; }
+      .topbar { align-items: flex-start; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+      .topbar-right { align-items: flex-start; flex-direction: column; gap: 6px; }
+      .hero { grid-template-columns: 1fr; gap: 14px; }
+      .hero-copy { padding: 26px; }
+      .hero-aside { min-height: 180px; }
+      .lobby-head { flex-direction: column; }
+      .lobby-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; gap: 10px; }
+      .meta { text-align: left; }
+      .card { padding: 18px; border-radius: 20px; }
+      .options { grid-template-columns: 1fr; }
+      .option label { justify-content: flex-start; min-height: 54px; padding-left: 16px; }
+      .actions { align-items: stretch; flex-direction: column; }
+      .speaker-controls { align-items: stretch; flex-direction: column; }
+      .result-top { flex-direction: column; }
+      .scale { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .shell { width: calc(100% - 20px); padding-top: 12px; padding-bottom: 32px; }
+      .topbar { margin-bottom: 14px; }
+      .brand { gap: 8px; font-size: 14px; }
+      .brand-mark { width: 36px; height: 36px; border-radius: 12px; }
+      .privacy-note { display: none; }
+      .hero { margin-bottom: 14px; }
+      .hero-copy { padding: 22px 18px; }
+      .hero-aside { display: none; }
+      h1 { font-size: 34px; }
+      .intro { margin-top: 14px; font-size: 14px; }
+      .card { padding: 16px; border-radius: 18px; }
+      .screen-title { font-size: 26px; }
+      .screen-copy { margin-bottom: 18px; font-size: 14px; }
+      input[type="text"] { min-height: 50px; padding: 13px 14px; font-size: 16px; }
+      .nickname-submit { width: 100%; min-height: 50px; margin-top: 4px; }
+      .lobby-count { width: 100%; }
+      .lobby-panel { padding: 14px; }
+      .question-stage { min-height: 0; }
+      .question-text { margin-bottom: 20px; font-size: 24px; }
+      .option label { min-height: 64px; padding: 12px 16px; font-size: 15px; }
+      .actions { gap: 14px; }
+      .actions button { width: 100%; min-height: 50px; }
+      .result h2 { font-size: 26px; }
+      .score-badge { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">P</span><span>自我覺察工具</span></div>
+      <div class="topbar-right"><div class="view-role" id="view-role">參與者畫面</div><div class="sync-status" id="sync-status">即時同步準備中</div><div class="privacy-note">答案會同步至本活動房間</div></div>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Perceived Stress Scale · 10 items</p>
+        <h1 id="page-title">壓力知覺量表<br>PSS-10</h1>
+        <p class="intro">先輸入 Nickname 進入等待室；演講者開始後，所有參與者會一起進入題目。每題停留時間由演講者決定。</p>
+      </div>
+      <aside class="hero-aside" aria-label="量表資訊">
+        <div class="aside-label">同步互動問卷</div>
+        <div class="aside-score">10 題</div>
+        <div class="aside-copy">演講者控制開始與換題；結果僅供自我了解，不取代專業評估。</div>
+      </aside>
+    </section>
+
+    <section class="card nickname-card" id="nickname-card" aria-labelledby="nickname-title" style="display: block;">
+      <p class="screen-kicker">Step 1 · Join</p>
+      <h2 class="screen-title" id="nickname-title">輸入你的 Nickname</h2>
+      <p class="screen-copy">送出後會進入等待室。請使用方便辨識的名稱，讓主持人與其他參與者看得到你。</p>
+      <form id="nickname-form" novalidate="">
+        <div>
+          <label class="field-label" for="participant-name">Nickname <span aria-hidden="true">*</span></label>
+          <input id="participant-name" type="text" autocomplete="nickname" placeholder="請輸入 Nickname" required="" aria-required="true" aria-describedby="nickname-error">
+          <p class="field-error" id="nickname-error" role="alert"></p>
+        </div>
+        <button type="submit" class="primary nickname-submit">送出並加入等待室</button>
+      </form>
+      <p class="copyright">加入後會公開顯示參與者 Nickname 與目前參與人數。</p>
+    </section>
+
+    <section class="card lobby-card" id="lobby-card" aria-labelledby="lobby-title" aria-live="polite" style="display: none;">
+      <div class="lobby-head">
+        <div>
+          <p class="screen-kicker">Step 2 · Lobby</p>
+          <h2 class="screen-title" id="lobby-title">等待參與者到齊</h2>
+          <p class="screen-copy">人數達到目標後，所有人會在同一時間進入第一題。</p>
+        </div>
+      <div class="lobby-count"><strong id="participant-count">0</strong><span>目前參與者</span></div>
+      </div>
+      <div class="lobby-grid">
+        <div class="lobby-panel">
+          <h3 class="panel-title">目前參與者</h3>
+          <div class="participant-list" id="participant-list"></div>
+        </div>
+        <div class="lobby-panel">
+          <h3 class="panel-title">活動設定</h3>
+          <p class="meta" style="text-align:left; white-space:normal;">是否開始：由演講者決定</p>
+          <p class="meta" style="text-align:left; white-space:normal;">是否進入下一題：由演講者決定</p>
+          <p class="meta" style="text-align:left; white-space:normal;">本題已答人數會顯示在演講者面板。</p>
+        </div>
+      </div>
+      <div class="lobby-status" id="lobby-status">等待演講者開始⋯</div>
+      <div class="speaker-controls" id="lobby-speaker-controls" hidden="">
+        <button type="button" class="primary" id="speaker-start-button">開始進入題目</button>
+        <span class="speaker-note">演講者可在參與者加入後決定何時開始。</span>
+      </div>
+    </section>
+
+    <section class="card" id="survey-card" aria-live="polite" style="display:none">
+      <div class="timer-row">
+        <div class="live-participants" id="live-participants">參與者 0 人 · 本題已答 0 人</div>
+        <div class="speaker-chip" id="speaker-badge">演講者控制</div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-head"><span id="progress-label">第 1 題，共 10 題</span><span id="progress-count">已完成 0 / 10</span></div>
+        <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+      </div>
+
+      <form id="survey-form" novalidate="">
+        <div class="question-stage">
+          <div class="question-number" id="question-number">QUESTION 01</div>
+          <h2 class="question-text" id="question-text"></h2>
+          <div class="options" id="options" role="radiogroup" aria-labelledby="question-text"></div>
+          <p class="error" id="error" role="alert">請依照自己的感受作答；是否進入下一題由演講者決定。</p>
+        </div>
+        <div class="actions">
+          <span class="meta" id="question-status">等待演講者決定下一題</span>
+          <button type="button" class="primary" id="speaker-next-button" hidden="">下一題</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card result" id="result-card" aria-labelledby="result-title" tabindex="-1">
+      <div id="participant-result">
+        <div class="result-top">
+          <div>
+            <p class="eyebrow">Assessment complete</p>
+            <h2 id="result-title">你的結果</h2>
+            <span class="level" id="result-level"></span>
+            <p class="result-copy" id="result-participant"></p>
+          </div>
+          <div class="score-badge"><strong id="result-score">0</strong><span>總分 / 40</span></div>
+        </div>
+        <p class="result-copy" id="result-copy"></p>
+        <div class="scale" aria-label="分數區間">
+          <div class="scale-item" data-range="low"><strong>低壓力</strong><span>0–13 分</span></div>
+          <div class="scale-item" data-range="medium"><strong>中度壓力</strong><span>14–26 分</span></div>
+          <div class="scale-item" data-range="high"><strong>高壓力</strong><span>27–40 分</span></div>
+        </div>
+        <div class="disclaimer">這份量表反映的是主觀壓力感受，結果不構成醫療診斷。如果壓力已持續影響睡眠、工作、人際或日常生活，建議尋求合格心理師、身心科／精神科醫師或其他適當的專業協助。</div>
+      </div>
+      <div id="speaker-summary" hidden="">
+        <div class="result-top">
+          <div>
+            <p class="eyebrow">Group summary</p>
+            <h2>全體結果統計</h2>
+            <p class="result-copy">以下比例依已提交結果的參與者計算。</p>
+          </div>
+        </div>
+        <div class="scale" aria-label="全體壓力分布">
+          <div class="scale-item"><strong id="summary-low-percent">0%</strong><span id="summary-low-count">低壓力（0 人）</span></div>
+          <div class="scale-item"><strong id="summary-medium-percent">0%</strong><span id="summary-medium-count">中度壓力（0 人）</span></div>
+          <div class="scale-item"><strong id="summary-high-percent">0%</strong><span id="summary-high-count">高度壓力（0 人）</span></div>
+        </div>
+        <p class="meta" id="summary-coverage"></p>
+      </div>
+      <button type="button" id="restart-button" style="margin-top:22px">重新填答</button>
+      <p class="copyright">Perceived Stress Scale (PSS-10) · 中文內容依使用者提供之文件呈現。© Copyright RST Assessments, LLC. All Rights Reserved (2022). 請依原授權條款使用。</p>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+    import { getDatabase, onDisconnect, onValue, ref, set, update } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMk2rzaOrX9RVIGx18ZX9gfd300_8hbeE",
+      authDomain: "pss-10.firebaseapp.com",
+      databaseURL: "https://pss-10-default-rtdb.firebaseio.com",
+      projectId: "pss-10",
+      storageBucket: "pss-10.firebasestorage.app",
+      messagingSenderId: "1748833412",
+      appId: "1:1748833412:web:9ac81d8c10d1ecd4e69ed1",
+      measurementId: "G-LVWBKPT9HJ"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const database = getDatabase(firebaseApp);
+    const normalPoints = [0, 1, 2, 3, 4];
+    const reversePoints = [4, 3, 2, 1, 0];
+    const questions = [
+      { text: "您是否經常會因為一些突發的事情，而讓心情變得不好？", points: normalPoints },
+      { text: "您是否經常會覺得您沒有辦法控制生活裡一些重要的事情？", points: normalPoints },
+      { text: "您是否經常會覺得緊張而且有壓力？", points: normalPoints },
+      { text: "您對自己處理個人問題的能力，是否經常會覺得有信心？", points: reversePoints },
+      { text: "您是否經常會覺得一切的事情都很順心如意？", points: reversePoints },
+      { text: "您是否經常會覺得無法應付您必須要做的事？", points: normalPoints },
+      { text: "對於生活中一些容易惹人生氣的小事情，您是否經常能夠控制得宜？", points: reversePoints },
+      { text: "您是否經常會覺得事情都在您可以控制的範圍內？", points: reversePoints },
+      { text: "您是否經常會因為一些您無法控制的事情，而讓您感到生氣？", points: normalPoints },
+      { text: "您是否經常覺得困難已經堆積如山（太多），讓您無法克服？", points: normalPoints }
+    ];
+    const options = ["從來不會", "幾乎不會", "有時候會", "常常會", "一直都會"];
+    const HEARTBEAT_TIMEOUT_MS = 30000;
+    const ROOM_ID = new URLSearchParams(window.location.search).get("room") || "pss-demo";
+    const IS_SPEAKER = new URLSearchParams(window.location.search).get("speaker") === "1";
+    const STORAGE_KEY = `pss-10-room-v2-${ROOM_ID}`;
+    const CHANNEL_NAME = `pss-10-channel-v2-${ROOM_ID}`;
+    const roomRef = ref(database, `rooms/${ROOM_ID}`);
+    const answers = Array(questions.length).fill(null);
+    let current = -1;
+    let nickname = "";
+    let channel = null;
+    let memoryState = createDefaultState();
+    let firebaseError = null;
+
+    const $ = (id) => document.getElementById(id);
+    const nicknameCard = $("nickname-card");
+    const lobbyCard = $("lobby-card");
+    const surveyCard = $("survey-card");
+    const resultCard = $("result-card");
+    const nicknameForm = $("nickname-form");
+    const nicknameInput = $("participant-name");
+    const nicknameError = $("nickname-error");
+    const questionText = $("question-text");
+    const optionsEl = $("options");
+    const error = $("error");
+    const progressBar = $("progress-bar");
+    const progressLabel = $("progress-label");
+    const progressCount = $("progress-count");
+    const speakerStartButton = $("speaker-start-button");
+    const speakerNextButton = $("speaker-next-button");
+    const syncStatus = $("sync-status");
+    $("view-role").textContent = IS_SPEAKER ? "演講者畫面" : "參與者畫面";
+
+    let participantId = getParticipantId();
+
+    function createDefaultState() {
+      return { status: "lobby", participants: {}, questionIndex: 0, responses: {}, results: {} };
+    }
+
+    function normalizeState(value) {
+      const fallback = createDefaultState();
+      return {
+        status: ["lobby", "running", "finished"].includes(value?.status) ? value.status : fallback.status,
+        participants: value?.participants && typeof value.participants === "object" ? value.participants : {},
+        questionIndex: Math.max(0, Math.min(questions.length - 1, Number(value?.questionIndex) || 0)),
+        responses: value?.responses && typeof value.responses === "object" ? value.responses : {},
+        results: value?.results && typeof value.results === "object" ? value.results : {}
+      };
+    }
+
+    function getParticipantId() {
+      try {
+        const saved = sessionStorage.getItem("pss-10-participant-id");
+        if (saved) return saved;
+        const id = crypto.randomUUID ? crypto.randomUUID() : `p-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        sessionStorage.setItem("pss-10-participant-id", id);
+        return id;
+      } catch {
+        return `p-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+    }
+
+    function setSyncStatus(text, isError = false) {
+      syncStatus.textContent = text;
+      syncStatus.classList.toggle("error", isError);
+    }
+
+    function reportFirebaseError(error) {
+      firebaseError = error;
+      setSyncStatus("即時同步連線失敗", true);
+      console.error("Firebase Realtime Database error", error);
+    }
+
+    function persistLocalState(value) {
+      const state = normalizeState(value);
+      memoryState = state;
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* local fallback is optional */ }
+      if (channel) channel.postMessage({ type: "state-updated" });
+      return state;
+    }
+
+    function readState() {
+      return normalizeState(memoryState);
+    }
+
+    function writeState(value) {
+      const state = persistLocalState(value);
+      set(roomRef, state).then(() => {
+        if (!firebaseError) setSyncStatus("即時同步中");
+      }).catch(reportFirebaseError);
+      return state;
+    }
+
+    function setStatePath(target, path, value) {
+      const parts = path.split("/");
+      let cursor = target;
+      parts.slice(0, -1).forEach(part => {
+        if (!cursor[part] || typeof cursor[part] !== "object") cursor[part] = {};
+        cursor = cursor[part];
+      });
+      const last = parts[parts.length - 1];
+      if (value === null) delete cursor[last];
+      else cursor[last] = value;
+    }
+
+    function updateStatePaths(patches) {
+      const state = normalizeState(readState());
+      Object.entries(patches).forEach(([path, value]) => setStatePath(state, path, value));
+      persistLocalState(state);
+      update(roomRef, patches).then(() => {
+        if (!firebaseError) setSyncStatus("即時同步中");
+      }).catch(reportFirebaseError);
+      return state;
+    }
+
+    function cleanState(state) {
+      const now = Date.now();
+      const staleIds = Object.keys(state.participants).filter(id => {
+        const lastSeen = Number(state.participants[id]?.lastSeen) || 0;
+        return lastSeen && now - lastSeen > HEARTBEAT_TIMEOUT_MS;
+      });
+      if (!staleIds.length) return state;
+      staleIds.forEach(id => delete state.participants[id]);
+      persistLocalState(state);
+      const patches = Object.fromEntries(staleIds.map(id => [`participants/${id}`, null]));
+      update(roomRef, patches).catch(reportFirebaseError);
+      return state;
+    }
+
+    function participantCount(state) {
+      return Object.keys(state.participants).length;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[character]));
+    }
+
+    function showScreen(screen) {
+      nicknameCard.style.display = screen === "nickname" ? "block" : "none";
+      lobbyCard.style.display = screen === "lobby" ? "block" : "none";
+      surveyCard.style.display = screen === "survey" ? "block" : "none";
+      if (screen === "result") resultCard.classList.add("visible");
+      else resultCard.classList.remove("visible");
+    }
+
+    function renderParticipants(state) {
+      const entries = Object.values(state.participants).sort((a, b) => a.joinedAt - b.joinedAt);
+      const count = entries.length;
+      $("participant-count").textContent = count;
+      $("live-participants").textContent = `參與者 ${count} 人 · 本題已答 ${answeredCount(state, state.questionIndex)} 人`;
+      $("participant-list").innerHTML = entries.length ? entries.map(person => {
+        const initial = escapeHtml((person.nickname || "?").slice(0, 1).toUpperCase());
+        const own = person.id === participantId ? "（你）" : "";
+        return `<div class="participant-row"><span class="participant-avatar">${initial}</span><span class="participant-name">${escapeHtml(person.nickname)} ${own}</span><span class="participant-state">已加入</span></div>`;
+      }).join("") : `<span class="meta">尚未有人加入</span>`;
+    }
+
+    function renderLobby(state) {
+      renderParticipants(state);
+      const status = $("lobby-status");
+      status.classList.remove("countdown");
+      if (IS_SPEAKER) {
+        status.textContent = participantCount(state) ? "演講者可以按下按鈕開始第一題。" : "等待參與者加入後開始。";
+      } else {
+        status.textContent = "等待演講者決定何時開始⋯";
+      }
+      speakerStartButton.hidden = !IS_SPEAKER;
+      speakerStartButton.disabled = participantCount(state) === 0;
+    }
+
+    function answeredCount(state, questionIndex) {
+      const answered = state.responses?.[questionIndex] || {};
+      return Object.keys(answered).filter(id => state.participants[id]).length;
+    }
+
+    function markAnswered(index) {
+      const state = cleanState(readState());
+      if (state.status !== "running" || !nickname || !state.participants[participantId]) return;
+      updateStatePaths({ [`responses/${index}/${participantId}`]: true });
+    }
+
+    function renderQuestion(index) {
+      current = index;
+      const item = questions[index];
+      $("question-number").textContent = `QUESTION ${String(index + 1).padStart(2, "0")}`;
+      questionText.textContent = item.text;
+      if (IS_SPEAKER) {
+        optionsEl.innerHTML = "";
+      } else {
+        optionsEl.innerHTML = options.map((label, optionIndex) => {
+          const id = `answer-${index}-${optionIndex}`;
+          const checked = answers[index] === optionIndex ? " checked" : "";
+          return `<div class="option"><input id="${id}" type="radio" name="answer" value="${optionIndex}"${checked}><label for="${id}">${label}</label></div>`;
+        }).join("");
+        optionsEl.querySelectorAll("input").forEach(input => input.addEventListener("change", () => {
+          answers[current] = Number(input.value);
+          error.textContent = "";
+          markAnswered(current);
+          updateProgress();
+        }));
+      }
+      progressLabel.textContent = `第 ${index + 1} 題，共 ${questions.length} 題`;
+      error.textContent = IS_SPEAKER ? "" : "請依照自己的感受作答；是否進入下一題由演講者決定。";
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const completed = answers.filter(answer => answer !== null).length;
+      progressCount.textContent = `已作答 ${completed} / ${questions.length}`;
+      progressBar.style.width = `${current < 0 ? 0 : ((current + 1) / questions.length) * 100}%`;
+    }
+
+    function renderSurvey(state) {
+      const index = state.questionIndex;
+      if (current !== index) renderQuestion(index);
+      const answered = answeredCount(state, index);
+      $("live-participants").textContent = `參與者 ${participantCount(state)} 人 · 本題已答 ${answered} 人`;
+      $("speaker-badge").hidden = !IS_SPEAKER;
+      speakerNextButton.hidden = !IS_SPEAKER;
+      speakerNextButton.textContent = index === questions.length - 1 ? "結束作答" : "下一題";
+      if (IS_SPEAKER) progressCount.textContent = `本題已答 ${answered} 人`;
+      $("question-status").textContent = IS_SPEAKER ? `本題已有 ${answered} 人答題，可由你決定是否進入下一題。` : "請完成作答，等待演講者決定下一題。";
+    }
+
+    function calculateOwnResult() {
+      const unanswered = answers.filter(answer => answer === null).length;
+      const score = answers.reduce((total, answer, index) => answer === null ? total : total + questions[index].points[answer], 0);
+      const range = score <= 13 ? "low" : score <= 26 ? "medium" : "high";
+      return { score, range, answered: questions.length - unanswered };
+    }
+
+    function publishOwnResult(state, result) {
+      if (!nickname || !state.participants[participantId]) return state;
+      const previous = state.results[participantId];
+      const next = { id: participantId, nickname, score: result.score, range: result.range, answered: result.answered, submittedAt: Date.now() };
+      if (!previous || previous.score !== next.score || previous.range !== next.range || previous.answered !== next.answered) {
+        return updateStatePaths({ [`results/${participantId}`]: next });
+      }
+      return state;
+    }
+
+    function renderSpeakerSummary(state) {
+      const participantIds = Object.keys(state.participants);
+      const submitted = participantIds.map(id => state.results?.[id]).filter(Boolean);
+      const counts = { low: 0, medium: 0, high: 0 };
+      submitted.forEach(result => { if (counts[result.range] !== undefined) counts[result.range] += 1; });
+      const denominator = submitted.length;
+      const percentage = range => denominator ? Math.round((counts[range] / denominator) * 100) : 0;
+      $("summary-low-percent").textContent = `${percentage("low")}%`;
+      $("summary-medium-percent").textContent = `${percentage("medium")}%`;
+      $("summary-high-percent").textContent = `${percentage("high")}%`;
+      $("summary-low-count").textContent = `低壓力（${counts.low} 人）`;
+      $("summary-medium-count").textContent = `中度壓力（${counts.medium} 人）`;
+      $("summary-high-count").textContent = `高度壓力（${counts.high} 人）`;
+      $("summary-coverage").textContent = `已收到 ${submitted.length} / ${participantIds.length} 位參與者的結果。`;
+    }
+
+    function showResult(state = cleanState(readState())) {
+      const ownResult = calculateOwnResult();
+      const joined = Boolean(nickname && state.participants[participantId]);
+      if (joined) state = publishOwnResult(state, ownResult);
+      const labels = { low: "低壓力", medium: "中度壓力", high: "高壓力" };
+      const copy = {
+        low: "目前的自覺壓力分數落在低壓力區間。請繼續維持有助於身心平衡的生活節奏。",
+        medium: "目前的自覺壓力分數落在中度壓力區間。可以留意近期的休息、界線與支持資源。",
+        high: "目前的自覺壓力分數落在高壓力區間。若這種感受持續或影響生活，建議安排專業諮詢。"
+      };
+      $("participant-result").hidden = IS_SPEAKER;
+      $("speaker-summary").hidden = !IS_SPEAKER;
+      if (IS_SPEAKER) {
+        renderSpeakerSummary(state);
+      } else {
+        $("result-title").textContent = "你的結果";
+        $("result-score").textContent = ownResult.score;
+        $("result-level").textContent = labels[ownResult.range];
+        $("result-participant").textContent = `${nickname || "參與者"} · 已作答 ${ownResult.answered}/${questions.length} 題`;
+        $("result-copy").textContent = copy[ownResult.range];
+        $("participant-result").querySelectorAll(".scale-item").forEach(el => el.classList.toggle("active", el.dataset.range === ownResult.range));
+      }
+      showScreen("result");
+      resultCard.focus();
+    }
+
+    function requireNickname() {
+      if (!nicknameInput.value.trim()) {
+        nicknameError.textContent = "請先填寫 Nickname。";
+        nicknameInput.focus();
+        return false;
+      }
+      nicknameError.textContent = "";
+      return true;
+    }
+
+    function startRound() {
+      if (!IS_SPEAKER) return;
+      const state = cleanState(readState());
+      if (state.status !== "lobby" || participantCount(state) === 0) return;
+      state.status = "running";
+      state.questionIndex = 0;
+      state.responses = {};
+      state.results = {};
+      writeState(state);
+      syncFromPeers();
+    }
+
+    function advanceQuestion() {
+      if (!IS_SPEAKER) return;
+      const state = cleanState(readState());
+      if (state.status !== "running") return;
+      const patches = state.questionIndex >= questions.length - 1
+        ? { status: "finished" }
+        : { questionIndex: state.questionIndex + 1 };
+      updateStatePaths(patches);
+      syncFromPeers();
+    }
+
+    function syncFromPeers() {
+      const state = cleanState(readState());
+      const joined = Boolean(nickname && state.participants[participantId]);
+      if (IS_SPEAKER || joined) {
+        renderParticipants(state);
+        if (state.status === "lobby") {
+          showScreen("lobby");
+          renderLobby(state);
+        } else if (state.status === "running") {
+          showScreen("survey");
+          renderSurvey(state);
+        } else if (state.status === "finished") {
+          showResult(state);
+        }
+      } else {
+        showScreen("nickname");
+      }
+    }
+
+    speakerStartButton.addEventListener("click", startRound);
+    speakerNextButton.addEventListener("click", advanceQuestion);
+
+    function heartbeat() {
+      if (!nickname) return;
+      const state = cleanState(readState());
+      const person = state.participants[participantId];
+      if (!person) return;
+      updateStatePaths({ [`participants/${participantId}/lastSeen`]: Date.now() });
+    }
+
+    nicknameForm.addEventListener("submit", event => {
+      event.preventDefault();
+      if (!requireNickname()) return;
+      const state = cleanState(readState());
+      if (state.status !== "lobby") {
+        nicknameError.textContent = "這個回合已經開始，請等待下一回合。";
+        return;
+      }
+      nickname = nicknameInput.value.trim().slice(0, 32);
+      try { sessionStorage.setItem("pss-10-nickname", nickname); } catch { /* optional */ }
+      const person = { id: participantId, nickname, joinedAt: Date.now(), lastSeen: Date.now() };
+      updateStatePaths({ [`participants/${participantId}`]: person });
+      onDisconnect(ref(database, `rooms/${ROOM_ID}/participants/${participantId}`)).remove().catch(reportFirebaseError);
+      showScreen("lobby");
+      syncFromPeers();
+    });
+
+    nicknameInput.addEventListener("input", () => {
+      if (nicknameInput.value.trim()) nicknameError.textContent = "";
+    });
+
+    $("survey-form").addEventListener("submit", event => event.preventDefault());
+
+    $("restart-button").addEventListener("click", () => {
+      const state = cleanState(readState());
+      const patches = { [`participants/${participantId}`]: null };
+      delete state.participants[participantId];
+      if (participantCount(state) === 0) Object.assign(patches, { status: "lobby", questionIndex: 0, responses: null, results: null });
+      updateStatePaths(patches);
+      answers.fill(null);
+      current = -1;
+      nickname = "";
+      nicknameInput.value = "";
+      try { sessionStorage.removeItem("pss-10-nickname"); } catch { /* optional */ }
+      showScreen("nickname");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    try { channel = new BroadcastChannel(CHANNEL_NAME); channel.addEventListener("message", syncFromPeers); } catch { channel = null; }
+    window.addEventListener("storage", syncFromPeers);
+    try { nickname = sessionStorage.getItem("pss-10-nickname") || ""; } catch { nickname = ""; }
+
+    onValue(roomRef, snapshot => {
+      firebaseError = null;
+      setSyncStatus("即時同步中");
+      if (snapshot.exists()) {
+        persistLocalState(snapshot.val());
+      } else {
+        const state = createDefaultState();
+        persistLocalState(state);
+        if (IS_SPEAKER) {
+          set(roomRef, state).catch(reportFirebaseError);
+        }
+      }
+      syncFromPeers();
+    }, reportFirebaseError);
+
+    setInterval(() => {
+      const state = cleanState(readState());
+      if (IS_SPEAKER || (nickname && state.participants[participantId])) {
+        if (state.status === "running") renderSurvey(state);
+        else if (state.status === "lobby") {
+          showScreen("lobby");
+          renderLobby(state);
+        } else if (state.status === "finished") showResult(state);
+      }
+    }, 200);
+    setInterval(heartbeat, 5000);
+    syncFromPeers();
+  </script>
+
+
+</body><div id="codex-agent-overlay-root" data-codex-agent-overlay-root="true"></div></html>
